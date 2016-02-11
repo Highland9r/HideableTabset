@@ -1,0 +1,15 @@
+#wrapper {
+  margin-left: 200px;
+}
+#content {
+  float: right;
+  width: 100%;
+  background-color: #CCF;
+}
+#sidebar {
+  width: 500px;
+  background-color: #FFA;
+}
+#cleared {
+  clear: both;
+}

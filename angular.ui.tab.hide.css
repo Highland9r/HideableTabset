@@ -1,0 +1,47 @@
+.ui-tabs-hideable {
+    position: relative;
+}
+.ui-tabs-hideable > .spacer > div:first-child > .nav-tabs {
+    white-space: nowrap;
+    overflow: hidden;
+    border-bottom: 0; 
+}
+.ui-tabs-hideable > .spacer > div:first-child > .nav-tabs > li {
+    float: none;
+    display: table-cell; 
+}
+.ui-tabs-hideable > .spacer > div:first-child > .nav-tabs > li > a {
+        height: 42px; 
+}
+.ui-tabs-hideable > .spacer > div:first-child > .tab-content {
+    margin-top: -1px;
+    border-top: 1px solid #ddd;
+}
+.ui-tabs-hideable > .btn-group {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.ui-tabs-hideable > .btn-group > .btn:first-child {
+    width: 25px;
+    height: 42px;
+    line-height: 42px;
+    color: #428bca;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-left-width: 0;
+    padding: 0;
+    background-color: #fff;
+    z-index: 10;
+    border-radius: 0 4px 0 0;
+}
+.ui-tabs-hideable > .btn-group > .btn:first-child:before {
+    font-family: 'Glyphicons Halflings';
+    content: '\e114';
+}
+.ui-tabs-hideable > .btn-group .dropDownTabActiveMark:before {
+    font-family: 'Glyphicons Halflings';
+    content: '\e013';
+    padding-right: 10px;
+    font-size: 12px; 
+}
