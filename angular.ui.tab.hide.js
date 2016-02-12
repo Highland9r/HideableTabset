@@ -28,7 +28,7 @@ angular.module('ui.tab.hide', [])
             },
             template: ['<div class="ui-tabs-hideable">',
                         '<div class="spacer" ng-transclude></div>',
-                        '<div class="btn-group" uib-dropdown>',
+                        '<div class="btn-group" uib-dropdown ng-hide="hideDropDown">',
                             '<button type="button" class="btn" uib-dropdown-toggle></button>',
                             '<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="single-button">',
                               '<li role="menuitem" ng-repeat="tab in dropdownTabs" ng-click="activateTab(tab)">',
@@ -48,22 +48,42 @@ angular.module('ui.tab.hide', [])
                         });
                     }
                 };
+                
+                var winResizeTimeout;
 
                 $scope.onWindowResize = function() {
-                    $scope.reCalc();
+                      // delay to avoid running lots of times
+                      clearTimeout(winResizeTimeout);
+                      winResizeTimeout = setTimeout(function() {
+                        $scope.reCalc();
+                        $scope.$apply();
+                      }, 250);
                 };
 
                 $scope.reCalc = function() {
                     var allTabs = $scope.tabContainer.querySelectorAll('li');
                     var totalWidth = $scope.tabContainer.offsetWidth;
+                    
+                    // calculate total tabset width
                     var calcWidth = 0;
                     angular.forEach(allTabs, function (tab) {
-                        
                         calcWidth+= tab.offsetWidth;
-                        
+                    });
+                    
+                    if (calcWidth > totalWidth) {
+                        $scope.hideDropDown = false;
+                        totalWidth = totalWidth - 25;
+                    } else {
+                        $scope.hideDropDown = true;
+                    }
+                    
+                    calcWidth = 0;
+                    angular.forEach(allTabs, function (tab) {
+                        calcWidth+= tab.offsetWidth;
+
+                        // hide tabs overlaps total width
                         var tabEl = angular.element(tab);
-                        
-                        if (calcWidth >= totalWidth) {
+                        if (calcWidth > totalWidth) {
                             tabEl.css("visibility", "hidden");
                         } else {
                             tabEl.css("visibility", "visible");
