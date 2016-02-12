@@ -9,9 +9,10 @@
 .ui-tabs-hideable > .spacer > div:first-child > .nav-tabs > li {
     float: none;
     display: table-cell; 
+    visibility: hidden;
 }
 .ui-tabs-hideable > .spacer > div:first-child > .nav-tabs > li > a {
-        height: 42px; 
+    height: 42px;
 }
 .ui-tabs-hideable > .spacer > div:first-child > .tab-content {
     margin-top: -1px;
@@ -29,7 +30,6 @@
     color: #428bca;
     text-align: center;
     border: 1px solid #ddd;
-    border-left-width: 0;
     padding: 0;
     background-color: #fff;
     z-index: 10;
