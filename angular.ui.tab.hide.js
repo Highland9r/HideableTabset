@@ -59,6 +59,11 @@ angular.module('ui.tab.hide', [])
                         $scope.$apply();
                       }, 250);
                 };
+                
+                $scope.activateTab = function(tab) {
+                    if(tab.disabled) return;
+                    tab.active = true;
+                }
 
                 $scope.reCalc = function() {
                     var allTabs = $scope.tabContainer.querySelectorAll('li');
@@ -70,13 +75,17 @@ angular.module('ui.tab.hide', [])
                         calcWidth+= tab.offsetWidth;
                     });
                     
+                    // DEBUG
+                    //console.log(calcWidth + " : " + totalWidth  + " : " +$scope.tabContainer.scrollWidth;
+                    
                     if (calcWidth > totalWidth) {
                         $scope.hideDropDown = false;
-                        totalWidth = totalWidth - 25;
+                        totalWidth = totalWidth - 25; // respect dropdown width
                     } else {
                         $scope.hideDropDown = true;
                     }
                     
+                    $scope.dropdownTabs = [];
                     calcWidth = 0;
                     angular.forEach(allTabs, function (tab) {
                         calcWidth+= tab.offsetWidth;
@@ -88,6 +97,11 @@ angular.module('ui.tab.hide', [])
                         } else {
                             tabEl.css("visibility", "visible");
                         }
+                        
+                        //push new field to use as title in the drop down.
+                        var tabScope = tabEl.isolateScope();
+                            tabScope.title = tabScope.headingElement.textContent;
+                        $scope.dropdownTabs.push(tabScope);
                     });
                 };
 
@@ -106,17 +120,6 @@ angular.module('ui.tab.hide', [])
                             });    
                         }
                     );
-
-                    // populate drop down list
-                    $scope.dropdownTabs = [];
-                    var allTabs = $scope.tabContainer.querySelectorAll('li');
-                    angular.forEach(allTabs, function (tab) {
-                        var tabScope = angular.element(tab).isolateScope();
-                            tabScope.title = tabScope.headingElement.textContent;
-
-                        //push new field to use as title in the drop down.
-                        $scope.dropdownTabs.push(tabScope);
-                    });
 
                     // attaching event to window resize.
                     angular.element($window).on('resize', $scope.onWindowResize);
