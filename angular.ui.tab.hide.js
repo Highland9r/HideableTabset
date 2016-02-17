@@ -2,18 +2,13 @@ angular.module('ui.tab.hide', [])
     .provider('hideableTabsetConfig', function() {
        //the default options
         var defaultConfig = {
-          showTooltips: true,
         };
 
         var config = angular.extend({}, defaultConfig);
 
         return {
-          setShowTooltips : function(value) {
-            config.showTooltips = value;
-          },
           $get: function() {
             return {
-                showTooltips: config.showTooltips
             };
           }
         };
@@ -61,49 +56,76 @@ angular.module('ui.tab.hide', [])
                 };
                 
                 $scope.activateTab = function(tab) {
-                    if(tab.disabled) return;
+                    if (tab.disabled) return;
                     tab.active = true;
+
+                    $timeout(function () {
+                        $scope.reCalc();
+                    });
                 }
 
                 $scope.reCalc = function() {
+                    var visibleWidth = $scope.tabContainer.offsetWidth;
                     var allTabs = $scope.tabContainer.querySelectorAll('li');
-                    var totalWidth = $scope.tabContainer.offsetWidth;
+
+                    var activeTab = angular.element($scope.tabContainer.querySelector('li.active'));
+                        activeTab.css("visibility", "visible");
                     
                     // calculate total tabset width
                     var calcWidth = 0;
                     angular.forEach(allTabs, function (tab) {
-                        calcWidth+= tab.offsetWidth;
+                        var tabEl = angular.element(tab);
+                            tabEl.css("display", "table-cell");
+
+                        calcWidth+= tabEl.width();
                     });
                     
-                    // DEBUG
-                    //console.log(calcWidth + " : " + totalWidth  + " : " +$scope.tabContainer.scrollWidth;
-                    
-                    if (calcWidth > totalWidth) {
+                    if (calcWidth > visibleWidth) {
                         $scope.hideDropDown = false;
-                        totalWidth = totalWidth - 25; // respect dropdown width
+
+                        // shrink the visible width to respect drop down width
+                        visibleWidth = visibleWidth - 25;
                     } else {
                         $scope.hideDropDown = true;
                     }
-                    
-                    $scope.dropdownTabs = [];
+
+                    // shrink the visible width to respect active tab width
+                    visibleWidth = visibleWidth - activeTab.width();
+
                     calcWidth = 0;
                     angular.forEach(allTabs, function (tab) {
-                        calcWidth+= tab.offsetWidth;
-
-                        // hide tabs overlaps total width
                         var tabEl = angular.element(tab);
-                        if (calcWidth > totalWidth) {
-                            tabEl.css("visibility", "hidden");
+                        if (!tabEl.hasClass("active")) {
+                            calcWidth+= tabEl.width();
+                        }
+
+                        // hide tabs overlaps visible width
+                        if (calcWidth > visibleWidth) {
+                            if (!tabEl.hasClass("active")) {
+                                tabEl.css("visibility", "hidden");
+                                tabEl.css("display", "none");
+                            }
                         } else {
                             tabEl.css("visibility", "visible");
+                            tabEl.css("display", "table-cell");
                         }
-                        
-                        //push new field to use as title in the drop down.
-                        var tabScope = tabEl.isolateScope();
-                            tabScope.title = tabScope.headingElement.textContent;
-                        $scope.dropdownTabs.push(tabScope);
                     });
                 };
+
+                $scope.populateDropdown = function() {
+                     var allTabs = $scope.tabContainer.querySelectorAll('li');
+
+                     $scope.dropdownTabs = [];
+
+                     angular.forEach(allTabs, function (tab) {
+                         var tabEl = angular.element(tab);
+
+                         // push new field to use as title in the drop down
+                         var tabScope = tabEl.isolateScope();
+                            tabScope.title = tabScope.headingElement.textContent;
+                         $scope.dropdownTabs.push(tabScope);
+                    });
+                 };
 
                 $scope.init = function() {
                     $scope.tabContainer = $element[0].querySelector('.spacer ul.nav-tabs');
@@ -116,6 +138,7 @@ angular.module('ui.tab.hide', [])
                         },
                         function () {
                             $timeout(function () {
+                                $scope.populateDropdown();
                                 $scope.reCalc();
                             });    
                         }
